@@ -7,16 +7,18 @@ import {
 } from '@angular/core';
 import { Validators } from '@angular/forms';
 import { FormControl } from 'ngx-typesafe-forms';
-import { filter, Observable, Subscription } from 'rxjs';
+import { filter, map, Observable, Subscription } from 'rxjs';
 import { observeProperty } from '../../../../shared/rjxx-utils/observe-property';
 import { ProjectEntry } from '../../models';
 import { Memoized } from '../../../../shared/decorators';
 import { notUndefined } from '../../../../shared/predicates';
 import { HourEntryService } from '../../services/hour-entry.service';
 
-const TIME_ENTRIES = [...Array(10).keys()].map(
+const TIME_ENTRIES = [...Array(33).keys()].map(
   (keyIndex) =>
-    `${Math.floor(keyIndex / 4)}:${(15 * keyIndex) % 60}.padStart(2, '0')`
+    `${Math.floor(keyIndex / 4)}:${((15 * keyIndex) % 60)
+      .toString()
+      .padStart(2, '0')}`
 );
 @Component({
   selector: 'app-project-entry',
@@ -38,7 +40,16 @@ export class ProjectEntryComponent implements OnInit, OnDestroy {
 
   constructor(private readonly hourEntryService: HourEntryService) {}
 
+  @Memoized public get filteredTimes$(): Observable<string[]> {
+    return this.spentTimeControl.valueChanges.pipe(
+      map((searchText) =>
+        TIME_ENTRIES.filter((timeEntry) => timeEntry.includes(searchText))
+      )
+    );
+  }
+
   public ngOnInit(): void {
+    console.log(TIME_ENTRIES);
     this.subscriptions.add(
       this.projectEntry$.subscribe((projectEntry) => {
         this.descriptionControl.setValue(projectEntry.description ?? '');

@@ -5,6 +5,14 @@
 </mat-form-field>
 <mat-form-field appearance="fill" class="time-input">
   <mat-label>Time spent</mat-label>
-  <input matInput [formControl]="spentTimeControl" />
+  <input matInput [formControl]="spentTimeControl" [matAutocomplete]="auto" />
+  <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+    <mat-option
+      *ngFor="let timeEntry of filteredTimes$ | async"
+      [value]="timeEntry"
+    >
+      {{ timeEntry }}
+    </mat-option>
+  </mat-autocomplete>
   <mat-error *ngIf="spentTimeControl.invalid">Field is required</mat-error>
 </mat-form-field>
