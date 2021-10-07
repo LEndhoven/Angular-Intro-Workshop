@@ -12,4 +12,5 @@
 
 .description-input {
   width: calc(100% - 200px);
+  min-width: 240px;
 }

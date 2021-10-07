@@ -1,16 +1,51 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
 import { Memoized } from '../../../shared/decorators';
+import { ProjectEntry } from '../models';
 
 @Injectable()
 export class HourEntryService {
   private readonly currentDateSubject = new BehaviorSubject<Date>(new Date());
+  private readonly projectEntriesByDateSubject = new BehaviorSubject<
+    Map<Date, ProjectEntry[]>
+  >(new Map<Date, ProjectEntry[]>());
 
   @Memoized public get currentDate$(): Observable<Date> {
     return this.currentDateSubject.asObservable();
   }
 
+  @Memoized public get currentProjectEntries$(): Observable<ProjectEntry[]> {
+    return combineLatest([
+      this.currentDate$,
+      this.projectEntriesByDateSubject,
+    ]).pipe(
+      map(
+        ([currentDate, projectEntriesByDate]) =>
+          projectEntriesByDate.get(currentDate) ?? ([] as ProjectEntry[])
+      )
+    );
+  }
+
   public updateCurrentDate(newCurrentDate: Date): void {
     this.currentDateSubject.next(newCurrentDate);
+  }
+
+  public addEmptyProjectEntry(date: Date, index: number): void {
+    const currentProjectEntriesByDate = new Map(
+      this.projectEntriesByDateSubject.getValue()
+    );
+    const currentProjectEntries =
+      [...currentProjectEntriesByDate.get(date)] ?? ([] as ProjectEntry[]);
+    const usedIndex =
+      index > currentProjectEntries.length
+        ? currentProjectEntries.length
+        : index < 0
+        ? 0
+        : index;
+
+    currentProjectEntries.splice(usedIndex, 0, { date });
+    currentProjectEntriesByDate.set(date, currentProjectEntries);
+
+    this.projectEntriesByDateSubject.next(currentProjectEntriesByDate);
   }
 }
