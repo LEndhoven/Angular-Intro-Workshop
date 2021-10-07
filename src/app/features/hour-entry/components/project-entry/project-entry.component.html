@@ -6,5 +6,5 @@
 <mat-form-field appearance="fill" class="time-input">
   <mat-label>Time spent</mat-label>
   <input matInput [formControl]="spentTimeControl" />
-  <mat-error *ngIf="descriptionControl.invalid">Field is required</mat-error>
+  <mat-error *ngIf="spentTimeControl.invalid">Field is required</mat-error>
 </mat-form-field>

@@ -1,6 +1,13 @@
 <app-date-selector></app-date-selector>
-<div *ngFor="let projectEntry of projectEntries$ | async" class="project-entry">
+<div
+  *ngFor="let projectEntry of projectEntries$ | async; let index = index"
+  class="project-entry"
+>
   <app-project-entry [projectEntry]="projectEntry"></app-project-entry>
-  <button mat-button><mat-icon>add</mat-icon></button>
-  <button mat-button><mat-icon>delete</mat-icon></button>
+  <button mat-icon-button (click)="addProjectEntry(index + 1)">
+    <mat-icon>add</mat-icon>
+  </button>
+  <button mat-icon-button (click)="removeProjectEntry(projectEntry)">
+    <mat-icon>delete</mat-icon>
+  </button>
 </div>

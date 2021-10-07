@@ -8,5 +8,13 @@
 }
 
 .project-entry {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
   width: 100%;
+}
+
+.mat-icon-button {
+  margin-top: -16px;
 }
