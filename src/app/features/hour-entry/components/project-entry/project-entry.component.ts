@@ -14,6 +14,10 @@ import { Memoized } from '../../../../shared/decorators';
 import { notUndefined } from '../../../../shared/predicates';
 import { HourEntryService } from '../../services/hour-entry.service';
 
+const TIME_ENTRIES = [...Array(10).keys()].map(
+  (keyIndex) =>
+    `${Math.floor(keyIndex / 4)}:${(15 * keyIndex) % 60}.padStart(2, '0')`
+);
 @Component({
   selector: 'app-project-entry',
   templateUrl: './project-entry.component.html',
