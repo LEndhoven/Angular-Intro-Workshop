@@ -17,4 +17,8 @@
 
 .mat-icon-button {
   margin-top: -16px;
+
+  &:disabled {
+    cursor: not-allowed;
+  }
 }

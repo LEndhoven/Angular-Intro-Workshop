@@ -8,8 +8,8 @@ import { ProjectEntry } from '../models';
 export class HourEntryService {
   private readonly currentDateSubject = new BehaviorSubject<Date>(new Date());
   private readonly projectEntriesByDateSubject = new BehaviorSubject<
-    Map<Date, ProjectEntry[]>
-  >(new Map<Date, ProjectEntry[]>());
+    Map<number, ProjectEntry[]>
+  >(new Map<number, ProjectEntry[]>());
 
   @Memoized public get currentDate$(): Observable<Date> {
     return this.currentDateSubject.asObservable();
@@ -22,7 +22,8 @@ export class HourEntryService {
     ]).pipe(
       map(
         ([currentDate, projectEntriesByDate]) =>
-          projectEntriesByDate.get(currentDate) ?? ([] as ProjectEntry[])
+          projectEntriesByDate.get(currentDate.getTime()) ??
+          ([] as ProjectEntry[])
       )
     );
   }
@@ -31,13 +32,41 @@ export class HourEntryService {
     this.currentDateSubject.next(newCurrentDate);
   }
 
+  public updateProjectEntry(projectEntry: ProjectEntry): void {
+    const currentProjectEntriesByDate = new Map(
+      this.projectEntriesByDateSubject.getValue()
+    );
+
+    const currentProjectEntries = [
+      ...(currentProjectEntriesByDate.get(projectEntry.date.getTime()) ??
+        ([] as ProjectEntry[])),
+    ];
+
+    const usedIndex = currentProjectEntries.findIndex(
+      ({ id }) => id === projectEntry.id
+    );
+
+    if (usedIndex < 0) {
+      return;
+    }
+
+    currentProjectEntries.splice(usedIndex, 1, projectEntry);
+    currentProjectEntriesByDate.set(
+      projectEntry.date.getTime(),
+      currentProjectEntries
+    );
+
+    this.projectEntriesByDateSubject.next(currentProjectEntriesByDate);
+  }
+
   public addEmptyProjectEntry(date: Date, index: number): void {
     const currentProjectEntriesByDate = new Map(
       this.projectEntriesByDateSubject.getValue()
     );
 
     const currentProjectEntries = [
-      ...(currentProjectEntriesByDate.get(date) ?? ([] as ProjectEntry[])),
+      ...(currentProjectEntriesByDate.get(date.getTime()) ??
+        ([] as ProjectEntry[])),
     ];
     const usedIndex =
       index > currentProjectEntries.length
@@ -47,7 +76,7 @@ export class HourEntryService {
         : index;
 
     currentProjectEntries.splice(usedIndex, 0, { id: generateGuid(), date });
-    currentProjectEntriesByDate.set(date, currentProjectEntries);
+    currentProjectEntriesByDate.set(date.getTime(), currentProjectEntries);
 
     this.projectEntriesByDateSubject.next(currentProjectEntriesByDate);
   }
@@ -57,7 +86,7 @@ export class HourEntryService {
       this.projectEntriesByDateSubject.getValue()
     );
     const currentProjectEntries = [
-      ...(currentProjectEntriesByDate.get(projectEntry.date) ??
+      ...(currentProjectEntriesByDate.get(projectEntry.date.getTime()) ??
         ([] as ProjectEntry[])),
     ];
 
@@ -68,7 +97,10 @@ export class HourEntryService {
     }
 
     currentProjectEntries.splice(entryIndex, 1);
-    currentProjectEntriesByDate.set(projectEntry.date, currentProjectEntries);
+    currentProjectEntriesByDate.set(
+      projectEntry.date.getTime(),
+      currentProjectEntries
+    );
 
     this.projectEntriesByDateSubject.next(currentProjectEntriesByDate);
   }

@@ -1,13 +1,23 @@
 <app-date-selector></app-date-selector>
-<div
-  *ngFor="let projectEntry of projectEntries$ | async; let index = index"
-  class="project-entry"
->
-  <app-project-entry [projectEntry]="projectEntry"></app-project-entry>
-  <button mat-icon-button (click)="addProjectEntry(index + 1)">
-    <mat-icon>add</mat-icon>
-  </button>
-  <button mat-icon-button (click)="removeProjectEntry(projectEntry)">
-    <mat-icon>delete</mat-icon>
-  </button>
-</div>
+<ng-container *ngIf="projectEntries$ | async as projectEntries">
+  <div
+    *ngFor="
+      let projectEntry of projectEntries;
+      trackBy: trackById;
+      let index = index
+    "
+    class="project-entry"
+  >
+    <app-project-entry [projectEntry]="projectEntry"></app-project-entry>
+    <button mat-icon-button (click)="addProjectEntry(index + 1)">
+      <mat-icon>add</mat-icon>
+    </button>
+    <button
+      mat-icon-button
+      [disabled]="projectEntries.length <= 1"
+      (click)="removeProjectEntry(projectEntry)"
+    >
+      <mat-icon>delete</mat-icon>
+    </button>
+  </div>
+</ng-container>

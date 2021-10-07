@@ -19,7 +19,7 @@ import { HourEntryService } from './services/hour-entry.service';
 @Component({
   selector: 'app-hour-entry',
   templateUrl: './hour-entry.component.html',
-  styleUrls: ['./hour-entry.component.css'],
+  styleUrls: ['./hour-entry.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HourEntryComponent implements OnInit, OnDestroy {
@@ -57,6 +57,10 @@ export class HourEntryComponent implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+  }
+
+  public trackById<T>(_: number, { id }: T & { id: unknown }): unknown {
+    return id;
   }
 
   public addProjectEntry(index: number): void {

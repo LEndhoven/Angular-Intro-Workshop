@@ -12,11 +12,12 @@ import { observeProperty } from '../../../../shared/rjxx-utils/observe-property'
 import { ProjectEntry } from '../../models';
 import { Memoized } from '../../../../shared/decorators';
 import { notUndefined } from '../../../../shared/predicates';
+import { HourEntryService } from '../../services/hour-entry.service';
 
 @Component({
   selector: 'app-project-entry',
   templateUrl: './project-entry.component.html',
-  styleUrls: ['./project-entry.component.css'],
+  styleUrls: ['./project-entry.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProjectEntryComponent implements OnInit, OnDestroy {
@@ -31,6 +32,8 @@ export class ProjectEntryComponent implements OnInit, OnDestroy {
 
   private readonly subscriptions = new Subscription();
 
+  constructor(private readonly hourEntryService: HourEntryService) {}
+
   public ngOnInit(): void {
     this.subscriptions.add(
       this.projectEntry$.subscribe((projectEntry) => {
@@ -41,6 +44,13 @@ export class ProjectEntryComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
+    this.hourEntryService.updateProjectEntry({
+      id: this.projectEntry.id,
+      date: this.projectEntry.date,
+      description: this.descriptionControl.value,
+      timeSpent: this.spentTimeControl.value,
+    });
+
     this.subscriptions.unsubscribe();
   }
 
