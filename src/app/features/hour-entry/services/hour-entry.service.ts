@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { Memoized } from 'src/app/shared/decorators';
+import { Memoized } from '../../../shared/decorators';
 
 @Injectable()
 export class HourEntryService {
