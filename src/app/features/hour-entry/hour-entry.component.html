@@ -1,2 +1,4 @@
 <app-date-selector></app-date-selector>
-<app-project-entry></app-project-entry>
+<div *ngFor="let projectEntry of projectEntries$ | async">
+  <app-project-entry [projectEntry]="projectEntry"></app-project-entry>
+</div>

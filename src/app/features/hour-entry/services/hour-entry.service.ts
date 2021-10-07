@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
 import { Memoized } from '../../../shared/decorators';
+import { generateGuid } from '../../../shared/utils';
 import { ProjectEntry } from '../models';
 
 @Injectable()
@@ -43,7 +44,7 @@ export class HourEntryService {
         ? 0
         : index;
 
-    currentProjectEntries.splice(usedIndex, 0, { date });
+    currentProjectEntries.splice(usedIndex, 0, { id: generateGuid(), date });
     currentProjectEntriesByDate.set(date, currentProjectEntries);
 
     this.projectEntriesByDateSubject.next(currentProjectEntriesByDate);
