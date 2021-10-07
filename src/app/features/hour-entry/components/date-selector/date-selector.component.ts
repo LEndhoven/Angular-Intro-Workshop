@@ -1,13 +1,9 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  OnDestroy,
-  OnInit,
-  Output,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from 'ngx-typesafe-forms';
 import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
+
+import { HourEntryService } from '../../services/hour-entry.service';
 
 @Component({
   selector: 'app-date-selector',
@@ -16,18 +12,24 @@ import { Subscription } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DateSelectorComponent implements OnInit, OnDestroy {
-  @Output() public readonly currentDate = new EventEmitter<Date>();
-
   public readonly dateControl = new FormControl<Date>(new Date());
 
   private readonly subscriptions = new Subscription();
 
+  constructor(
+    private readonly hourEntryService: HourEntryService,
+  ) {}
+
   public ngOnInit(): void {
-    this.subscriptions.add(
-      this.dateControl.value$.subscribe((currentDate) =>
-        this.currentDate.emit(currentDate)
-      )
-    );
+    this.subscriptions.add(this.hourEntryService.currentDate$.pipe(
+      take(1),
+    ).subscribe(
+      (currentDate) => this.dateControl.setValue(currentDate, { emitEvent: false }),
+    ));
+
+    this.subscriptions.add(this.dateControl.value$.subscribe(
+      (currentDate) => this.hourEntryService.updateCurrentDate(currentDate),
+    ));
   }
 
   public ngOnDestroy(): void {
