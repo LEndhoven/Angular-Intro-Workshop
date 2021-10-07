@@ -5,3 +5,11 @@
   align-items: center;
   width: 100%;
 }
+
+.time-input {
+  width: 120px;
+}
+
+.description-input {
+  width: calc(100% - 200px);
+}

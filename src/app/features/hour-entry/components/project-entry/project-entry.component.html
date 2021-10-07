@@ -1,8 +1,10 @@
-<mat-form-field appearance="fill">
+<mat-form-field appearance="fill" class="description-input">
   <mat-label>Description</mat-label>
   <input matInput [formControl]="descriptionControl" />
+  <mat-error *ngIf="descriptionControl.invalid">Field is required</mat-error>
 </mat-form-field>
-<mat-form-field appearance="fill">
+<mat-form-field appearance="fill" class="time-input">
   <mat-label>Time spent</mat-label>
   <input matInput [formControl]="spentTimeControl" />
+  <mat-error *ngIf="descriptionControl.invalid">Field is required</mat-error>
 </mat-form-field>
