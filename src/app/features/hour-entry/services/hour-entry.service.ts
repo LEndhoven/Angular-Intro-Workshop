@@ -48,4 +48,24 @@ export class HourEntryService {
 
     this.projectEntriesByDateSubject.next(currentProjectEntriesByDate);
   }
+
+  public removeProjectEntry(projectEntry: ProjectEntry): void {
+    const currentProjectEntriesByDate = new Map(
+      this.projectEntriesByDateSubject.getValue()
+    );
+    const currentProjectEntries = [
+      ...currentProjectEntriesByDate.get(projectEntry.date),
+    ];
+
+    const entryIndex = currentProjectEntries.indexOf(projectEntry);
+
+    if (entryIndex < 0) {
+      return;
+    }
+
+    currentProjectEntries.splice(entryIndex, 1);
+    currentProjectEntriesByDate.set(projectEntry.date, currentProjectEntries);
+
+    this.projectEntriesByDateSubject.next(currentProjectEntriesByDate);
+  }
 }
