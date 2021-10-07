@@ -1,4 +1,6 @@
 <app-date-selector></app-date-selector>
-<div *ngFor="let projectEntry of projectEntries$ | async">
+<div *ngFor="let projectEntry of projectEntries$ | async" class="project-entry">
   <app-project-entry [projectEntry]="projectEntry"></app-project-entry>
+  <button mat-button><mat-icon>add</mat-icon></button>
+  <button mat-button><mat-icon>delete</mat-icon></button>
 </div>

@@ -3,3 +3,8 @@
   flex-direction: row;
   align-items: center;
 }
+
+.date-input,
+.next-button {
+  margin-left: 8px;
+}

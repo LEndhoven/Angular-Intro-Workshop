@@ -5,7 +5,13 @@ import {
   OnDestroy,
   OnInit,
 } from '@angular/core';
-import { filter, Observable, Subject, Subscription, withLatestFrom } from 'rxjs';
+import {
+  filter,
+  Observable,
+  Subject,
+  Subscription,
+  withLatestFrom,
+} from 'rxjs';
 import { Memoized } from '../../shared/decorators';
 import { ProjectEntry } from './models';
 import { HourEntryService } from './services/hour-entry.service';
@@ -29,12 +35,16 @@ export class HourEntryComponent implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     // Ensure always one entry is visible
-    this.subscriptions.add(this.hourEntryService.currentDate$.pipe(
-      withLatestFrom(this.projectEntries$),
-      filter(([currentDate, projectEntries]) => projectEntries.length === 0),
-    ).subscribe(
-      ([currentDate, projectEntries]) => // Do something,
-    ));
+    this.subscriptions.add(
+      this.hourEntryService.currentDate$
+        .pipe(
+          withLatestFrom(this.projectEntries$),
+          filter(([currentDate, projectEntries]) => projectEntries.length === 0)
+        )
+        .subscribe(([currentDate, _]) =>
+          this.hourEntryService.addEmptyProjectEntry(currentDate, 0)
+        )
+    );
 
     this.subscriptions.add(
       this.addEntryIndexSubject

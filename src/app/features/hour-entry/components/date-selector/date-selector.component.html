@@ -1,12 +1,12 @@
 <button (click)="goToPreviousDay()">
   <mat-icon>chevron_left</mat-icon>
 </button>
-<mat-form-field appearance="fill">
+<mat-form-field appearance="fill" class="date-input">
   <mat-label>Entry Date</mat-label>
   <input matInput [matDatepicker]="picker" [formControl]="dateControl" />
   <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
   <mat-datepicker #picker></mat-datepicker>
 </mat-form-field>
-<button (click)="goToNextDay()">
+<button (click)="goToNextDay()" class="next-button">
   <mat-icon>chevron_right</mat-icon>
 </button>

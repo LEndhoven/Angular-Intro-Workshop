@@ -35,8 +35,10 @@ export class HourEntryService {
     const currentProjectEntriesByDate = new Map(
       this.projectEntriesByDateSubject.getValue()
     );
-    const currentProjectEntries =
-      [...currentProjectEntriesByDate.get(date)] ?? ([] as ProjectEntry[]);
+
+    const currentProjectEntries = [
+      ...(currentProjectEntriesByDate.get(date) ?? ([] as ProjectEntry[])),
+    ];
     const usedIndex =
       index > currentProjectEntries.length
         ? currentProjectEntries.length
@@ -55,7 +57,8 @@ export class HourEntryService {
       this.projectEntriesByDateSubject.getValue()
     );
     const currentProjectEntries = [
-      ...currentProjectEntriesByDate.get(projectEntry.date),
+      ...(currentProjectEntriesByDate.get(projectEntry.date) ??
+        ([] as ProjectEntry[])),
     ];
 
     const entryIndex = currentProjectEntries.indexOf(projectEntry);
