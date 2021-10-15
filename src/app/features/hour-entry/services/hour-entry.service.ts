@@ -1,8 +1,15 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
+import { BehaviorSubject, combineLatest, map, Observable, of } from 'rxjs';
 import { Memoized } from '../../../shared/decorators';
 import { generateGuid } from '../../../shared/utils';
-import { ProjectEntry } from '../models';
+import { Project, ProjectEntry } from '../models';
+
+const AVAILABLE_PROJECTS: Project[] = [
+  { name: 'General Development Scheme', code: 'GENDS', color: 'blue' },
+  { name: 'General Meetings', code: 'GENME', color: 'grey' },
+  { name: 'Awesome Workshop', code: 'AWORK', color: 'green' },
+  { name: 'Project 1', code: 'PROJ1', color: 'purple' },
+];
 
 @Injectable()
 export class HourEntryService {
@@ -13,6 +20,10 @@ export class HourEntryService {
 
   @Memoized public get currentDate$(): Observable<Date> {
     return this.currentDateSubject.asObservable();
+  }
+
+  @Memoized public get availableProjects$(): Observable<Project[]> {
+    return of(AVAILABLE_PROJECTS); // Redundant Observable flow, only used to mimic a server call setup
   }
 
   @Memoized public get currentProjectEntries$(): Observable<ProjectEntry[]> {

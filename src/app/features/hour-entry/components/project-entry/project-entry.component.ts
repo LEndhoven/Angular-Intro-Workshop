@@ -9,7 +9,7 @@ import { Validators } from '@angular/forms';
 import { FormControl } from 'ngx-typesafe-forms';
 import { filter, map, Observable, Subscription } from 'rxjs';
 import { observeProperty } from '../../../../shared/rjxx-utils/observe-property';
-import { ProjectEntry } from '../../models';
+import { Project, ProjectEntry } from '../../models';
 import { Memoized } from '../../../../shared/decorators';
 import { notUndefined } from '../../../../shared/predicates';
 import { HourEntryService } from '../../services/hour-entry.service';
@@ -28,6 +28,11 @@ const TIME_ENTRIES = [...Array(33).keys()].map(
 })
 export class ProjectEntryComponent implements OnInit, OnDestroy {
   @Input() public projectEntry: ProjectEntry;
+
+  public readonly projectControl = new FormControl<string | Project | null>(
+    '',
+    [Validators.required]
+  );
 
   public readonly descriptionControl = new FormControl<string>('', [
     Validators.required,
