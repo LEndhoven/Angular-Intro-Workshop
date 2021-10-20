@@ -8,7 +8,7 @@ import {
 import { Validators } from '@angular/forms';
 import { FormControl } from 'ngx-typesafe-forms';
 import { filter, map, Observable, Subscription } from 'rxjs';
-import { observeProperty } from '../../../../shared/rjxx-utils/observe-property';
+import { observeProperty } from '../../../../shared/rxjs-utils/observe-property';
 import { Project, ProjectEntry } from '../../models';
 import { Memoized } from '../../../../shared/decorators';
 import { notUndefined } from '../../../../shared/predicates';
