@@ -5,8 +5,12 @@ import {
   OnDestroy,
   OnInit,
 } from '@angular/core';
-import { filter, Observable, Subscription, withLatestFrom } from 'rxjs';
+import { filter, map, Observable, Subscription, withLatestFrom } from 'rxjs';
 import { Memoized } from '../../shared/decorators';
+import {
+  convertTimeExpressinToMinutes,
+  isValidTimeDuration,
+} from '../../shared/utils';
 import { ProjectEntry } from './models';
 import { HourEntryService } from './services/hour-entry.service';
 
@@ -23,6 +27,24 @@ export class HourEntryComponent implements OnInit, OnDestroy {
 
   @Memoized public get projectEntries$(): Observable<ProjectEntry[]> {
     return this.hourEntryService.currentProjectEntries$;
+  }
+
+  @Memoized public get totalTimeInMinutes$(): Observable<number> {
+    return this.projectEntries$.pipe(
+      map((projectEntries) =>
+        projectEntries
+          .filter(
+            ({ timeSpent }) =>
+              timeSpent !== undefined && isValidTimeDuration(timeSpent)
+          )
+          .reduce(
+            (totalMinutes, projectEntry) =>
+              totalMinutes +
+              convertTimeExpressinToMinutes(projectEntry.timeSpent),
+            0
+          )
+      )
+    );
   }
 
   public ngOnInit(): void {

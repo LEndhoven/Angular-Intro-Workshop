@@ -1,4 +1,10 @@
 <app-date-selector></app-date-selector>
+<div claSS="total-time">
+  <span>Total time: </span>
+  <span *ngIf="totalTimeInMinutes$ | async as totalTimeInMinutes">{{
+    totalTimeInMinutes | timeFormat
+  }}</span>
+</div>
 <div
   *ngIf="projectEntries$ | async as projectEntries"
   cdkDropList
@@ -6,22 +12,14 @@
   class="drop-list"
 >
   <div
-    *ngFor="
-      let projectEntry of projectEntries;
-      trackBy: trackById;
-      let index = index
-    "
+    *ngFor="let projectEntry of projectEntries; trackBy: trackById"
     cdkDrag
     class="project-entry"
     [class.is-awesome-workshop]="projectEntry.projectCode === 'AWORK'"
     [class.is-gends]="projectEntry.projectCode === 'GENDS'"
   >
     <app-project-entry [projectEntry]="projectEntry"></app-project-entry>
-    <button
-      mat-icon-button
-      [matMenuTriggerFor]="menu"
-      aria-label="Example icon-button with a menu"
-    >
+    <button mat-icon-button [matMenuTriggerFor]="menu">
       <mat-icon>more_vert</mat-icon>
     </button>
     <mat-menu #menu="matMenu">
