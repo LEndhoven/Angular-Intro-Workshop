@@ -11,7 +11,12 @@
   margin-left: 16px;
 }
 
+.project-input {
+  width: 240px;
+}
+
 .description-input {
-  width: calc(100% - 200px);
+  width: calc(100% - 440px);
   min-width: 240px;
+  margin-left: 16px;
 }

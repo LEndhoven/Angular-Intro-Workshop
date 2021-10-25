@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { Validators } from '@angular/forms';
 import { FormControl } from 'ngx-typesafe-forms';
-import { filter, map, Observable, Subscription } from 'rxjs';
+import { filter, map, Observable, Subscription, withLatestFrom } from 'rxjs';
 import { observeProperty } from '../../../../shared/rxjs-utils/observe-property';
 import { Project, ProjectEntry } from '../../models';
 import { Memoized } from '../../../../shared/decorators';
@@ -29,10 +29,9 @@ const TIME_ENTRIES = [...Array(33).keys()].map(
 export class ProjectEntryComponent implements OnInit, OnDestroy {
   @Input() public projectEntry: ProjectEntry;
 
-  public readonly projectControl = new FormControl<string | Project | null>(
-    '',
-    [Validators.required]
-  );
+  public readonly projectControl = new FormControl<string | Project>('', [
+    Validators.required,
+  ]);
 
   public readonly descriptionControl = new FormControl<string>('', [
     Validators.required,
@@ -45,8 +44,21 @@ export class ProjectEntryComponent implements OnInit, OnDestroy {
 
   constructor(private readonly hourEntryService: HourEntryService) {}
 
+  @Memoized public get filteredProjects$(): Observable<Project[]> {
+    return this.projectControl.value$.pipe(
+      withLatestFrom(this.hourEntryService.availableProjects$),
+      map(([searchText, availableProjects]) =>
+        typeof searchText === 'string'
+          ? availableProjects.filter((project) =>
+              project.name.toLowerCase().includes(searchText.toLowerCase())
+            )
+          : availableProjects
+      )
+    );
+  }
+
   @Memoized public get filteredTimes$(): Observable<string[]> {
-    return this.spentTimeControl.valueChanges.pipe(
+    return this.spentTimeControl.value$.pipe(
       map((searchText) =>
         TIME_ENTRIES.filter((timeEntry) => timeEntry.includes(searchText))
       )
@@ -54,12 +66,16 @@ export class ProjectEntryComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
-    console.log(TIME_ENTRIES);
     this.subscriptions.add(
-      this.projectEntry$.subscribe((projectEntry) => {
-        this.descriptionControl.setValue(projectEntry.description ?? '');
-        this.spentTimeControl.setValue(projectEntry.timeSpent ?? '');
-      })
+      this.projectEntry$
+        .pipe(withLatestFrom(this.hourEntryService.availableProjects$))
+        .subscribe(([projectEntry, projects]) => {
+          this.projectControl.setValue(
+            projects.find(({ code }) => projectEntry.projectCode === code) ?? ''
+          );
+          this.descriptionControl.setValue(projectEntry.description ?? '');
+          this.spentTimeControl.setValue(projectEntry.timeSpent ?? '');
+        })
     );
   }
 
@@ -67,11 +83,19 @@ export class ProjectEntryComponent implements OnInit, OnDestroy {
     this.hourEntryService.updateProjectEntry({
       id: this.projectEntry.id,
       date: this.projectEntry.date,
+      projectCode:
+        typeof this.projectControl.value === 'string'
+          ? undefined
+          : this.projectControl.value.code,
       description: this.descriptionControl.value,
       timeSpent: this.spentTimeControl.value,
     });
 
     this.subscriptions.unsubscribe();
+  }
+
+  public displayProjectName(project: Project): string {
+    return project.name;
   }
 
   @Memoized private get projectEntry$(): Observable<ProjectEntry> {

@@ -5,10 +5,9 @@ import { generateGuid } from '../../../shared/utils';
 import { Project, ProjectEntry } from '../models';
 
 const AVAILABLE_PROJECTS: Project[] = [
-  { name: 'General Development Scheme', code: 'GENDS', color: 'blue' },
-  { name: 'General Meetings', code: 'GENME', color: 'grey' },
-  { name: 'Awesome Workshop', code: 'AWORK', color: 'green' },
-  { name: 'Project 1', code: 'PROJ1', color: 'purple' },
+  { name: 'General Development Scheme', code: 'GENDS' },
+  { name: 'General Meetings', code: 'GENME' },
+  { name: 'Awesome Workshop', code: 'AWORK' },
 ];
 
 @Injectable()
@@ -23,7 +22,13 @@ export class HourEntryService {
   }
 
   @Memoized public get availableProjects$(): Observable<Project[]> {
-    return of(AVAILABLE_PROJECTS); // Redundant Observable flow, only used to mimic a server call setup
+    return of(AVAILABLE_PROJECTS).pipe(
+      map((projects) =>
+        [...projects].sort((project1, project2) =>
+          project1.name.localeCompare(project2.name)
+        )
+      )
+    ); // Redundant Observable flow, only used to mimic a server call setup
   }
 
   @Memoized public get currentProjectEntries$(): Observable<ProjectEntry[]> {
