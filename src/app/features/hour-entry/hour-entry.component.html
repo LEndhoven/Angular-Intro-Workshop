@@ -1,12 +1,20 @@
 <app-date-selector></app-date-selector>
-<ng-container *ngIf="projectEntries$ | async as projectEntries">
+<div
+  *ngIf="projectEntries$ | async as projectEntries"
+  cdkDropList
+  (cdkDropListDropped)="droppedProjectEntry($event)"
+  class="drop-list"
+>
   <div
     *ngFor="
       let projectEntry of projectEntries;
       trackBy: trackById;
       let index = index
     "
+    cdkDrag
     class="project-entry"
+    [class.is-awesome-workshop]="projectEntry.projectCode === 'AWORK'"
+    [class.is-gends]="projectEntry.projectCode === 'GENDS'"
   >
     <app-project-entry [projectEntry]="projectEntry"></app-project-entry>
     <button mat-icon-button (click)="addProjectEntry(index + 1)">
@@ -20,4 +28,4 @@
       <mat-icon>delete</mat-icon>
     </button>
   </div>
-</ng-container>
+</div>

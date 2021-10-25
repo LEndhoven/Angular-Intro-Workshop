@@ -7,6 +7,10 @@
   width: 100%;
 }
 
+.drop-list {
+  width: 100%;
+}
+
 .project-entry {
   display: flex;
   flex-direction: row;
@@ -14,6 +18,17 @@
   align-items: center;
   width: 100%;
   margin-top: 8px;
+  padding-top: 16px;
+  border: 2px solid black;
+  background-color: white;
+
+  &.is-awesome-workshop {
+    border-color: lightgreen;
+  }
+
+  &.is-gends {
+    border-color: red;
+  }
 }
 
 .mat-icon-button {

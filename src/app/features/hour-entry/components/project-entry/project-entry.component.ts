@@ -7,7 +7,15 @@ import {
 } from '@angular/core';
 import { Validators } from '@angular/forms';
 import { FormControl } from 'ngx-typesafe-forms';
-import { filter, map, Observable, Subscription, withLatestFrom } from 'rxjs';
+import {
+  combineLatest,
+  filter,
+  map,
+  Observable,
+  skip,
+  Subscription,
+  withLatestFrom,
+} from 'rxjs';
 import { observeProperty } from '../../../../shared/rxjs-utils/observe-property';
 import { Project, ProjectEntry } from '../../models';
 import { Memoized } from '../../../../shared/decorators';
@@ -76,6 +84,24 @@ export class ProjectEntryComponent implements OnInit, OnDestroy {
           this.descriptionControl.setValue(projectEntry.description ?? '');
           this.spentTimeControl.setValue(projectEntry.timeSpent ?? '');
         })
+    );
+
+    this.subscriptions.add(
+      combineLatest([
+        this.projectControl.value$,
+        this.descriptionControl.value$,
+        this.spentTimeControl.value$,
+      ])
+        .pipe(skip(1))
+        .subscribe(([project, description, spentTime]) =>
+          this.hourEntryService.updateProjectEntry({
+            id: this.projectEntry.id,
+            date: this.projectEntry.date,
+            projectCode: typeof project === 'string' ? undefined : project.code,
+            description: description,
+            timeSpent: spentTime,
+          })
+        )
     );
   }
 

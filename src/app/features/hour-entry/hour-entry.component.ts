@@ -1,4 +1,5 @@
 import { NumberInput } from '@angular/cdk/coercion';
+import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -69,5 +70,12 @@ export class HourEntryComponent implements OnInit, OnDestroy {
 
   public removeProjectEntry(projectEntry: ProjectEntry): void {
     this.hourEntryService.removeProjectEntry(projectEntry);
+  }
+
+  public droppedProjectEntry(cdkDragDrop: CdkDragDrop<ProjectEntry>): void {
+    this.hourEntryService.moveProjectEntry(
+      cdkDragDrop.previousIndex,
+      cdkDragDrop.currentIndex
+    );
   }
 }

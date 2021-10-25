@@ -1,3 +1,4 @@
+import { moveItemInArray } from '@angular/cdk/drag-drop';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, combineLatest, map, Observable, of } from 'rxjs';
 import { Memoized } from '../../../shared/decorators';
@@ -115,6 +116,24 @@ export class HourEntryService {
     currentProjectEntries.splice(entryIndex, 1);
     currentProjectEntriesByDate.set(
       projectEntry.date.getTime(),
+      currentProjectEntries
+    );
+
+    this.projectEntriesByDateSubject.next(currentProjectEntriesByDate);
+  }
+
+  public moveProjectEntry(oldIndex: number, newIndex: number): void {
+    const currentDate = this.currentDateSubject.getValue();
+    const currentProjectEntriesByDate = new Map(
+      this.projectEntriesByDateSubject.getValue()
+    );
+    const currentProjectEntries = [
+      ...(currentProjectEntriesByDate.get(currentDate.getTime()) ?? []),
+    ];
+    moveItemInArray(currentProjectEntries, oldIndex, newIndex);
+
+    currentProjectEntriesByDate.set(
+      currentDate.getTime(),
       currentProjectEntries
     );
 
