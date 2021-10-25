@@ -8,6 +8,6 @@ export class TimeFormatPipe implements PipeTransform {
     const numberOfMinutes = totalNumberOfMinutes % 60;
     const numberOfHours = Math.floor(totalNumberOfMinutes / 60);
 
-    return `${numberOfHours}:${numberOfMinutes}`;
+    return `${numberOfHours}:${numberOfMinutes.toString().padStart(2, '0')}`;
   }
 }
