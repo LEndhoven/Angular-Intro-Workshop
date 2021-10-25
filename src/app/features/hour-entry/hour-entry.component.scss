@@ -38,3 +38,11 @@
     cursor: not-allowed;
   }
 }
+
+add-project-entry {
+  position: fixed;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  bottom: 24px;
+}

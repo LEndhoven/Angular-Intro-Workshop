@@ -17,9 +17,6 @@
     [class.is-gends]="projectEntry.projectCode === 'GENDS'"
   >
     <app-project-entry [projectEntry]="projectEntry"></app-project-entry>
-    <button mat-icon-button (click)="addProjectEntry(index + 1)">
-      <mat-icon>add</mat-icon>
-    </button>
     <button
       mat-icon-button
       [disabled]="projectEntries.length <= 1"
@@ -29,3 +26,4 @@
     </button>
   </div>
 </div>
+<add-project-entry></add-project-entry>
