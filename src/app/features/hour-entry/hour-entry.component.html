@@ -19,11 +19,25 @@
     <app-project-entry [projectEntry]="projectEntry"></app-project-entry>
     <button
       mat-icon-button
-      [disabled]="projectEntries.length <= 1"
-      (click)="removeProjectEntry(projectEntry)"
+      [matMenuTriggerFor]="menu"
+      aria-label="Example icon-button with a menu"
     >
-      <mat-icon>delete</mat-icon>
+      <mat-icon>more_vert</mat-icon>
     </button>
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item (click)="duplicateProjectEntry(projectEntry)">
+        <mat-icon>content_copy</mat-icon>
+        <span>Duplicate</span>
+      </button>
+      <button
+        mat-menu-item
+        [disabled]="projectEntries.length <= 1"
+        (click)="removeProjectEntry(projectEntry)"
+      >
+        <mat-icon>delete</mat-icon>
+        <span>Remove entry</span>
+      </button>
+    </mat-menu>
   </div>
 </div>
-<add-project-entry></add-project-entry>
+<app-add-project-entry></app-add-project-entry>

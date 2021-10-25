@@ -8,7 +8,9 @@
 }
 
 .drop-list {
+  flex: 1 1 auto;
   width: 100%;
+  margin-bottom: 96px;
 }
 
 .project-entry {
@@ -39,10 +41,10 @@
   }
 }
 
-add-project-entry {
+app-add-project-entry {
   position: fixed;
   display: flex;
-  align-items: center;
+  justify-content: center;
   width: 100%;
   bottom: 24px;
 }

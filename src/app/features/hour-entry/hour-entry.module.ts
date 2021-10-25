@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { AddProjectEntryModule } from './components/add-project-entry/add-project-entry.module';
 
 import { DateSelectorModule } from './components/date-selector/date-selector.module';
@@ -21,6 +22,7 @@ import { HourEntryService } from './services/hour-entry.service';
     DragDropModule,
     MatButtonModule,
     MatIconModule,
+    MatMenuModule,
   ],
   exports: [HourEntryComponent],
   declarations: [HourEntryComponent],

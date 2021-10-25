@@ -92,6 +92,37 @@ export class HourEntryService {
     this.projectEntriesByDateSubject.next(currentProjectEntriesByDate);
   }
 
+  public duplicateProjectEntry(projectEntry: ProjectEntry): void {
+    const currentProjectEntriesByDate = new Map(
+      this.projectEntriesByDateSubject.getValue()
+    );
+    const currentProjectEntries = [
+      ...(currentProjectEntriesByDate.get(projectEntry.date.getTime()) ??
+        ([] as ProjectEntry[])),
+    ];
+
+    const entryIndex = currentProjectEntries.findIndex(
+      ({ id }) => id === projectEntry.id
+    );
+
+    if (entryIndex < 0) {
+      return;
+    }
+
+    const duplicatedProjectEntry: ProjectEntry = {
+      ...projectEntry,
+      id: generateGuid(),
+    };
+
+    currentProjectEntries.splice(entryIndex, 0, duplicatedProjectEntry);
+    currentProjectEntriesByDate.set(
+      projectEntry.date.getTime(),
+      currentProjectEntries
+    );
+
+    this.projectEntriesByDateSubject.next(currentProjectEntriesByDate);
+  }
+
   public removeProjectEntry(projectEntry: ProjectEntry): void {
     const currentProjectEntriesByDate = new Map(
       this.projectEntriesByDateSubject.getValue()
@@ -101,7 +132,9 @@ export class HourEntryService {
         ([] as ProjectEntry[])),
     ];
 
-    const entryIndex = currentProjectEntries.indexOf(projectEntry);
+    const entryIndex = currentProjectEntries.findIndex(
+      ({ id }) => id === projectEntry.id
+    );
 
     if (entryIndex < 0) {
       return;

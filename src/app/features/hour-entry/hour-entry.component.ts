@@ -47,6 +47,10 @@ export class HourEntryComponent implements OnInit, OnDestroy {
     return id;
   }
 
+  public duplicateProjectEntry(projectEntry: ProjectEntry): void {
+    this.hourEntryService.duplicateProjectEntry(projectEntry);
+  }
+
   public removeProjectEntry(projectEntry: ProjectEntry): void {
     this.hourEntryService.removeProjectEntry(projectEntry);
   }
