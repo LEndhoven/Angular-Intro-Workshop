@@ -22,14 +22,17 @@
   margin-top: 8px;
   padding-top: 16px;
   border: 2px solid black;
+  border-radius: 8px;
   background-color: white;
 
   &.is-awesome-workshop {
-    border-color: lightgreen;
+    background-color: rgb(216, 240, 216);
+    border-color: rgb(56, 233, 56);
   }
 
   &.is-gends {
-    border-color: red;
+    background-color: rgb(252, 233, 236);
+    border-color: rgb(255, 47, 79);
   }
 }
 
