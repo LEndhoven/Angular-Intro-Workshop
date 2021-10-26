@@ -53,11 +53,9 @@ export class HourEntryComponent implements OnInit, OnDestroy {
       this.hourEntryService.currentDate$
         .pipe(
           withLatestFrom(this.projectEntries$),
-          filter(([currentDate, projectEntries]) => projectEntries.length === 0)
+          filter(([_, projectEntries]) => projectEntries.length === 0)
         )
-        .subscribe(([currentDate, _]) =>
-          this.hourEntryService.addEmptyProjectEntry(currentDate)
-        )
+        .subscribe(() => this.hourEntryService.addEmptyProjectEntry())
     );
   }
 
