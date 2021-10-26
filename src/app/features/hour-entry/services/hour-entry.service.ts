@@ -76,18 +76,19 @@ export class HourEntryService {
     this.projectEntriesByDateSubject.next(currentProjectEntriesByDate);
   }
 
-  public addEmptyProjectEntry(date: Date): void {
+  public addEmptyProjectEntry(): void {
+    const currentDate = this.currentDateSubject.getValue();
     const currentProjectEntriesByDate = new Map(
       this.projectEntriesByDateSubject.getValue()
     );
 
     const currentProjectEntries = [
-      ...(currentProjectEntriesByDate.get(date.getTime()) ??
+      ...(currentProjectEntriesByDate.get(currentDate.getTime()) ??
         ([] as ProjectEntry[])),
     ];
 
-    currentProjectEntries.push({ id: generateGuid(), date });
-    currentProjectEntriesByDate.set(date.getTime(), currentProjectEntries);
+    currentProjectEntries.push({ id: generateGuid(), date: currentDate });
+    currentProjectEntriesByDate.set(currentDate.getTime(), currentProjectEntries);
 
     this.projectEntriesByDateSubject.next(currentProjectEntriesByDate);
   }

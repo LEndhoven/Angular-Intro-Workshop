@@ -53,7 +53,6 @@ export class DateSelectorComponent implements OnInit, OnDestroy {
   public goToNextDay(): void {
     const currentDate = this.dateControl.value;
     const newDate = addDays(currentDate, 1);
-    console.log(newDate);
     this.dateControl.setValue(newDate);
   }
 }
