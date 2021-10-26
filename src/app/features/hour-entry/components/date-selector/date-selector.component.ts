@@ -17,7 +17,7 @@ import { HourEntryService } from '../../services/hour-entry.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DateSelectorComponent implements OnInit, OnDestroy {
-  public readonly dateControl = new FormControl<Date>(new Date());
+  public readonly dateControl = new FormControl<Date>(getDateOnly(new Date()));
 
   private readonly subscriptions = new Subscription();
 
@@ -27,9 +27,10 @@ export class DateSelectorComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.hourEntryService.currentDate$
         .pipe(take(1))
-        .subscribe((currentDate) =>
-          this.dateControl.setValue(currentDate, { emitEvent: false })
-        )
+        .subscribe((currentDate) => {
+          const dateCopy = getDateOnly(currentDate);
+          this.dateControl.setValue(dateCopy, { emitEvent: false });
+        })
     );
 
     this.subscriptions.add(
@@ -52,8 +53,16 @@ export class DateSelectorComponent implements OnInit, OnDestroy {
   public goToNextDay(): void {
     const currentDate = this.dateControl.value;
     const newDate = addDays(currentDate, 1);
+    console.log(newDate);
     this.dateControl.setValue(newDate);
   }
+}
+
+function getDateOnly(date: Date): Date {
+  const dateCopy = new Date(date);
+  dateCopy.setHours(0, 0, 0, 0);
+
+  return dateCopy;
 }
 
 function addDays(date: Date, days: number): Date {
