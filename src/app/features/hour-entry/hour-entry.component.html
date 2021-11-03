@@ -6,31 +6,38 @@
   }}</span>
 </div>
 <div
-  *ngIf="projectEntries$ | async as projectEntries"
+  *ngIf="projectEntryViewModels$ | async as projectEntryViewModels"
   cdkDropList
   (cdkDropListDropped)="droppedProjectEntry($event)"
   class="drop-list"
 >
   <div
-    *ngFor="let projectEntry of projectEntries; trackBy: trackById"
+    *ngFor="
+      let projectEntryViewModel of projectEntryViewModels;
+      trackBy: trackById
+    "
     cdkDrag
     class="project-entry"
-    [class.is-awesome-workshop]="projectEntry.projectCode === 'AWORK'"
-    [class.is-gends]="projectEntry.projectCode === 'GENDS'"
+    [ngClass]="projectEntryViewModel.cssClass"
   >
-    <app-project-entry [projectEntry]="projectEntry"></app-project-entry>
+    <app-project-entry
+      [projectEntry]="projectEntryViewModel.projectEntry"
+    ></app-project-entry>
     <button mat-icon-button [matMenuTriggerFor]="menu">
       <mat-icon>more_vert</mat-icon>
     </button>
     <mat-menu #menu="matMenu">
-      <button mat-menu-item (click)="duplicateProjectEntry(projectEntry)">
+      <button
+        mat-menu-item
+        (click)="duplicateProjectEntry(projectEntryViewModel.projectEntry)"
+      >
         <mat-icon>content_copy</mat-icon>
         <span>Duplicate</span>
       </button>
       <button
         mat-menu-item
-        [disabled]="projectEntries.length <= 1"
-        (click)="removeProjectEntry(projectEntry)"
+        [disabled]="projectEntryViewModels.length <= 1"
+        (click)="removeProjectEntry(projectEntryViewModel.projectEntry)"
       >
         <mat-icon>delete</mat-icon>
         <span>Remove entry</span>

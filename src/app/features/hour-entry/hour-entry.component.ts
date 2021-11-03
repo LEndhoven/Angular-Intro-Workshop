@@ -14,6 +14,16 @@ import {
 import { ProjectEntry } from './models';
 import { HourEntryService } from './services/hour-entry.service';
 
+interface ProjectEntryViewModel {
+  projectEntry: ProjectEntry;
+  cssClass: string | undefined;
+}
+
+const PROJECT_CODE_TO_CLASS = new Map<string, string>([
+  ['GENDS', 'is-gends'],
+  ['AWORK', 'is-awesome-workshop'],
+]);
+
 @Component({
   selector: 'app-hour-entry',
   templateUrl: './hour-entry.component.html',
@@ -25,22 +35,34 @@ export class HourEntryComponent implements OnInit, OnDestroy {
 
   constructor(private readonly hourEntryService: HourEntryService) {}
 
-  @Memoized public get projectEntries$(): Observable<ProjectEntry[]> {
-    return this.hourEntryService.currentProjectEntries$;
+  @Memoized public get projectEntryViewModels$(): Observable<
+    ProjectEntryViewModel[]
+  > {
+    return this.hourEntryService.currentProjectEntries$.pipe(
+      map((projectEntries) =>
+        projectEntries.map((projectEntry) => ({
+          projectEntry,
+          cssClass: PROJECT_CODE_TO_CLASS.get(projectEntry.projectCode),
+        }))
+      )
+    );
   }
 
   @Memoized public get totalTimeInMinutes$(): Observable<number> {
-    return this.projectEntries$.pipe(
+    return this.projectEntryViewModels$.pipe(
       map((projectEntries) =>
         projectEntries
           .filter(
-            ({ timeSpent }) =>
-              timeSpent !== undefined && isValidTimeDuration(timeSpent)
+            ({ projectEntry }) =>
+              projectEntry.timeSpent !== undefined &&
+              isValidTimeDuration(projectEntry.timeSpent)
           )
           .reduce(
-            (totalMinutes, projectEntry) =>
+            (totalMinutes, projectEntryViewModel) =>
               totalMinutes +
-              convertTimeExpressinToMinutes(projectEntry.timeSpent),
+              convertTimeExpressinToMinutes(
+                projectEntryViewModel.projectEntry.timeSpent
+              ),
             0
           )
       )
@@ -52,7 +74,7 @@ export class HourEntryComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.hourEntryService.currentDate$
         .pipe(
-          withLatestFrom(this.projectEntries$),
+          withLatestFrom(this.projectEntryViewModels$),
           filter(([_, projectEntries]) => projectEntries.length === 0)
         )
         .subscribe(() => this.hourEntryService.addEmptyProjectEntry())
@@ -63,8 +85,11 @@ export class HourEntryComponent implements OnInit, OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
-  public trackById<T>(_: number, { id }: T & { id: unknown }): unknown {
-    return id;
+  public trackById<T>(
+    _: number,
+    { projectEntry }: T & { projectEntry: ProjectEntry }
+  ): unknown {
+    return projectEntry.id;
   }
 
   public duplicateProjectEntry(projectEntry: ProjectEntry): void {
