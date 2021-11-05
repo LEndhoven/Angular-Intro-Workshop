@@ -1,3 +1,4 @@
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
@@ -17,6 +18,7 @@ import { HourEntryService } from './services/hour-entry.service';
     DateSelectorModule,
     ProjectEntryModule,
 
+    DragDropModule,
     MatButtonModule,
     MatIconModule,
     MatMenuModule,
