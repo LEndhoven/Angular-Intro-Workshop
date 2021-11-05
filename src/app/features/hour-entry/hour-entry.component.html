@@ -1,14 +1,11 @@
-<app-date-selector></app-date-selector>
 <div class="total-time">
   <span>Total time: </span>
   <span *ngIf="totalTimeInMinutes$ | async as totalTimeInMinutes">{{
-    totalTimeInMinutes | timeFormat
+    totalTimeInMinutes
   }}</span>
 </div>
 <div
   *ngIf="projectEntryViewModels$ | async as projectEntryViewModels"
-  cdkDropList
-  (cdkDropListDropped)="droppedProjectEntry($event)"
   class="drop-list"
 >
   <div
@@ -16,13 +13,9 @@
       let projectEntryViewModel of projectEntryViewModels;
       trackBy: trackById
     "
-    cdkDrag
     class="project-entry"
-    [ngClass]="projectEntryViewModel.cssClass"
   >
-    <app-project-entry
-      [projectEntry]="projectEntryViewModel.projectEntry"
-    ></app-project-entry>
+    <app-project-entry></app-project-entry>
     <button mat-icon-button [matMenuTriggerFor]="menu">
       <mat-icon>more_vert</mat-icon>
     </button>
@@ -34,15 +27,6 @@
         <mat-icon>content_copy</mat-icon>
         <span>Duplicate</span>
       </button>
-      <button
-        mat-menu-item
-        [disabled]="projectEntryViewModels.length <= 1"
-        (click)="removeProjectEntry(projectEntryViewModel.projectEntry)"
-      >
-        <mat-icon>delete</mat-icon>
-        <span>Remove entry</span>
-      </button>
     </mat-menu>
   </div>
 </div>
-<app-add-project-entry></app-add-project-entry>
