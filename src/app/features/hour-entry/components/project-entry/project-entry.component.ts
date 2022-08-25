@@ -21,6 +21,7 @@ import { Project, ProjectEntry } from '../../models';
 import { Memoized } from '../../../../shared/decorators';
 import { notUndefined } from '../../../../shared/predicates';
 import { HourEntryService } from '../../services/hour-entry.service';
+import { cache } from '../../../../shared/rxjs-utils';
 
 const TIME_ENTRIES = [...Array(33).keys()].map(
   (keyIndex) =>
@@ -61,7 +62,8 @@ export class ProjectEntryComponent implements OnInit, OnDestroy {
               project.name.toLowerCase().includes(searchText.toLowerCase())
             )
           : availableProjects
-      )
+      ),
+      cache()
     );
   }
 
@@ -69,7 +71,8 @@ export class ProjectEntryComponent implements OnInit, OnDestroy {
     return this.spentTimeControl.value$.pipe(
       map((searchText) =>
         TIME_ENTRIES.filter((timeEntry) => timeEntry.includes(searchText))
-      )
+      ),
+      cache()
     );
   }
 
@@ -126,7 +129,8 @@ export class ProjectEntryComponent implements OnInit, OnDestroy {
 
   @Memoized private get projectEntry$(): Observable<ProjectEntry> {
     return observeProperty(this as ProjectEntryComponent, 'projectEntry').pipe(
-      filter(notUndefined)
+      filter(notUndefined),
+      cache()
     );
   }
 }

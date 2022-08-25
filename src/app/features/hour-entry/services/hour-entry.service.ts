@@ -1,6 +1,7 @@
 import { moveItemInArray } from '@angular/cdk/drag-drop';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, combineLatest, map, Observable, of } from 'rxjs';
+import { cache } from '../../../shared/rxjs-utils';
 import { Memoized } from '../../../shared/decorators';
 import { generateGuid } from '../../../shared/utils';
 import { Project, ProjectEntry } from '../models';
@@ -28,7 +29,8 @@ export class HourEntryService {
         [...projects].sort((project1, project2) =>
           project1.name.localeCompare(project2.name)
         )
-      )
+      ),
+      cache()
     ); // Redundant Observable flow, only used to mimic a server call setup
   }
 
@@ -41,7 +43,8 @@ export class HourEntryService {
         ([currentDate, projectEntriesByDate]) =>
           projectEntriesByDate.get(currentDate.getTime()) ??
           ([] as ProjectEntry[])
-      )
+      ),
+      cache()
     );
   }
 
@@ -88,7 +91,10 @@ export class HourEntryService {
     ];
 
     currentProjectEntries.push({ id: generateGuid(), date: currentDate });
-    currentProjectEntriesByDate.set(currentDate.getTime(), currentProjectEntries);
+    currentProjectEntriesByDate.set(
+      currentDate.getTime(),
+      currentProjectEntries
+    );
 
     this.projectEntriesByDateSubject.next(currentProjectEntriesByDate);
   }
