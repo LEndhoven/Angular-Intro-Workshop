@@ -6,6 +6,7 @@ import {
   OnInit,
 } from '@angular/core';
 import { filter, map, Observable, Subscription, withLatestFrom } from 'rxjs';
+import { cache } from '../../shared/rxjs-utils';
 import { Memoized } from '../../shared/decorators';
 import {
   convertTimeExpressinToMinutes,
@@ -44,7 +45,8 @@ export class HourEntryComponent implements OnInit, OnDestroy {
           projectEntry,
           cssClass: PROJECT_CODE_TO_CLASS.get(projectEntry.projectCode),
         }))
-      )
+      ),
+      cache()
     );
   }
 
@@ -65,7 +67,8 @@ export class HourEntryComponent implements OnInit, OnDestroy {
               ),
             0
           )
-      )
+      ),
+      cache()
     );
   }
 
