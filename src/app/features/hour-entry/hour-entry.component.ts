@@ -60,6 +60,37 @@ export class HourEntryComponent implements OnInit, OnDestroy {
 
   constructor(private readonly hourEntryService: HourEntryService) {}
 
+  public ngOnInit(): void {
+    // Ensure always one entry is visible
+    this.subscriptions.add(this.initializeEmptyEntry());
+  }
+
+  public ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
+
+  public trackById<T>(
+    _: number,
+    { projectEntry }: T & { projectEntry: ProjectEntry }
+  ): unknown {
+    return projectEntry.id;
+  }
+
+  public duplicateProjectEntry(projectEntry: ProjectEntry): void {
+    this.hourEntryService.duplicateProjectEntry(projectEntry);
+  }
+
+  public removeProjectEntry(projectEntry: ProjectEntry): void {
+    this.hourEntryService.removeProjectEntry(projectEntry);
+  }
+
+  public droppedProjectEntry(cdkDragDrop: CdkDragDrop<ProjectEntry>): void {
+    this.hourEntryService.moveProjectEntry(
+      cdkDragDrop.previousIndex,
+      cdkDragDrop.currentIndex
+    );
+  }
+
   @Memoized public get projectEntryViewModels$(): Observable<
     ProjectEntryViewModel[]
   > {
@@ -96,41 +127,12 @@ export class HourEntryComponent implements OnInit, OnDestroy {
     );
   }
 
-  public ngOnInit(): void {
-    // Ensure always one entry is visible
-    this.subscriptions.add(
-      this.hourEntryService.currentDate$
-        .pipe(
-          withLatestFrom(this.projectEntryViewModels$),
-          filter(([_, projectEntries]) => projectEntries.length === 0)
-        )
-        .subscribe(() => this.hourEntryService.addEmptyProjectEntry())
-    );
-  }
-
-  public ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
-  }
-
-  public trackById<T>(
-    _: number,
-    { projectEntry }: T & { projectEntry: ProjectEntry }
-  ): unknown {
-    return projectEntry.id;
-  }
-
-  public duplicateProjectEntry(projectEntry: ProjectEntry): void {
-    this.hourEntryService.duplicateProjectEntry(projectEntry);
-  }
-
-  public removeProjectEntry(projectEntry: ProjectEntry): void {
-    this.hourEntryService.removeProjectEntry(projectEntry);
-  }
-
-  public droppedProjectEntry(cdkDragDrop: CdkDragDrop<ProjectEntry>): void {
-    this.hourEntryService.moveProjectEntry(
-      cdkDragDrop.previousIndex,
-      cdkDragDrop.currentIndex
-    );
+  private initializeEmptyEntry(): Subscription {
+    return this.hourEntryService.currentDate$
+      .pipe(
+        withLatestFrom(this.projectEntryViewModels$),
+        filter(([_, projectEntries]) => projectEntries.length === 0)
+      )
+      .subscribe(() => this.hourEntryService.addEmptyProjectEntry());
   }
 }
