@@ -53,6 +53,30 @@ export class ProjectEntryComponent implements OnInit, OnDestroy {
 
   constructor(private readonly hourEntryService: HourEntryService) {}
 
+  public ngOnInit(): void {
+    this.subscriptions.add(this.initializeInputFields());
+    this.subscriptions.add(this.updateProjectEntryOnChanges());
+  }
+
+  public ngOnDestroy(): void {
+    this.hourEntryService.updateProjectEntry({
+      id: this.projectEntry.id,
+      date: this.projectEntry.date,
+      projectCode:
+        typeof this.projectControl.value === 'string'
+          ? undefined
+          : this.projectControl.value.code,
+      description: this.descriptionControl.value,
+      timeSpent: this.spentTimeControl.value,
+    });
+
+    this.subscriptions.unsubscribe();
+  }
+
+  public displayProjectName(project: Project): string {
+    return project.name;
+  }
+
   @Memoized public get filteredProjects$(): Observable<Project[]> {
     return this.projectControl.value$.pipe(
       withLatestFrom(this.hourEntryService.availableProjects$),
@@ -76,55 +100,34 @@ export class ProjectEntryComponent implements OnInit, OnDestroy {
     );
   }
 
-  public ngOnInit(): void {
-    this.subscriptions.add(
-      this.projectEntry$
-        .pipe(withLatestFrom(this.hourEntryService.availableProjects$))
-        .subscribe(([projectEntry, projects]) => {
-          this.projectControl.setValue(
-            projects.find(({ code }) => projectEntry.projectCode === code) ?? ''
-          );
-          this.descriptionControl.setValue(projectEntry.description ?? '');
-          this.spentTimeControl.setValue(projectEntry.timeSpent ?? '');
+  private initializeInputFields(): Subscription {
+    return this.projectEntry$
+      .pipe(withLatestFrom(this.hourEntryService.availableProjects$))
+      .subscribe(([projectEntry, projects]) => {
+        this.projectControl.setValue(
+          projects.find(({ code }) => projectEntry.projectCode === code) ?? ''
+        );
+        this.descriptionControl.setValue(projectEntry.description ?? '');
+        this.spentTimeControl.setValue(projectEntry.timeSpent ?? '');
+      });
+  }
+
+  private updateProjectEntryOnChanges(): Subscription {
+    return combineLatest([
+      this.projectControl.value$,
+      this.descriptionControl.value$,
+      this.spentTimeControl.value$,
+    ])
+      .pipe(skip(1))
+      .subscribe(([project, description, spentTime]) =>
+        this.hourEntryService.updateProjectEntry({
+          id: this.projectEntry.id,
+          date: this.projectEntry.date,
+          projectCode: typeof project === 'string' ? undefined : project.code,
+          description: description,
+          timeSpent: spentTime,
         })
-    );
-
-    this.subscriptions.add(
-      combineLatest([
-        this.projectControl.value$,
-        this.descriptionControl.value$,
-        this.spentTimeControl.value$,
-      ])
-        .pipe(skip(1))
-        .subscribe(([project, description, spentTime]) =>
-          this.hourEntryService.updateProjectEntry({
-            id: this.projectEntry.id,
-            date: this.projectEntry.date,
-            projectCode: typeof project === 'string' ? undefined : project.code,
-            description: description,
-            timeSpent: spentTime,
-          })
-        )
-    );
-  }
-
-  public ngOnDestroy(): void {
-    this.hourEntryService.updateProjectEntry({
-      id: this.projectEntry.id,
-      date: this.projectEntry.date,
-      projectCode:
-        typeof this.projectControl.value === 'string'
-          ? undefined
-          : this.projectControl.value.code,
-      description: this.descriptionControl.value,
-      timeSpent: this.spentTimeControl.value,
-    });
-
-    this.subscriptions.unsubscribe();
-  }
-
-  public displayProjectName(project: Project): string {
-    return project.name;
+      );
   }
 
   @Memoized private get projectEntry$(): Observable<ProjectEntry> {

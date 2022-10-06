@@ -24,20 +24,8 @@ export class DateSelectorComponent implements OnInit, OnDestroy {
   constructor(private readonly hourEntryService: HourEntryService) {}
 
   public ngOnInit(): void {
-    this.subscriptions.add(
-      this.hourEntryService.currentDate$
-        .pipe(take(1))
-        .subscribe((currentDate) => {
-          const dateCopy = getDateOnly(currentDate);
-          this.dateControl.setValue(dateCopy, { emitEvent: false });
-        })
-    );
-
-    this.subscriptions.add(
-      this.dateControl.value$.subscribe((currentDate) =>
-        this.hourEntryService.updateCurrentDate(currentDate)
-      )
-    );
+    this.subscriptions.add(this.initializeDateControl());
+    this.subscriptions.add(this.updateServiceOnChanges());
   }
 
   public ngOnDestroy(): void {
@@ -54,6 +42,21 @@ export class DateSelectorComponent implements OnInit, OnDestroy {
     const currentDate = this.dateControl.value;
     const newDate = addDays(currentDate, 1);
     this.dateControl.setValue(newDate);
+  }
+
+  private initializeDateControl(): Subscription {
+    return this.hourEntryService.currentDate$
+      .pipe(take(1))
+      .subscribe((currentDate) => {
+        const dateCopy = getDateOnly(currentDate);
+        this.dateControl.setValue(dateCopy, { emitEvent: false });
+      });
+  }
+
+  private updateServiceOnChanges(): Subscription {
+    return this.dateControl.value$.subscribe((currentDate) =>
+      this.hourEntryService.updateCurrentDate(currentDate)
+    );
   }
 }
 
