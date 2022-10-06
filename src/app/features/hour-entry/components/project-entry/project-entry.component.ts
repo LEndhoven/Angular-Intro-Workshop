@@ -5,7 +5,7 @@ import {
   OnDestroy,
   OnInit,
 } from '@angular/core';
-import { Validators } from '@angular/forms';
+import { ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormControl } from 'ngx-typesafe-forms';
 import {
   combineLatest,
@@ -22,6 +22,10 @@ import { Memoized } from '../../../../shared/decorators';
 import { notUndefined } from '../../../../shared/predicates';
 import { HourEntryService } from '../../services/hour-entry.service';
 import { cache } from '../../../../shared/rxjs-utils';
+import { CommonModule } from '@angular/common';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 const TIME_ENTRIES = [...Array(33).keys()].map(
   (keyIndex) =>
@@ -34,6 +38,15 @@ const TIME_ENTRIES = [...Array(33).keys()].map(
   templateUrl: './project-entry.component.html',
   styleUrls: ['./project-entry.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+
+    MatAutocompleteModule,
+    MatFormFieldModule,
+    MatInputModule,
+  ],
 })
 export class ProjectEntryComponent implements OnInit, OnDestroy {
   @Input() public projectEntry: ProjectEntry;

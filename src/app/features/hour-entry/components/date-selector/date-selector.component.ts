@@ -1,9 +1,16 @@
+import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
   OnDestroy,
   OnInit,
 } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { FormControl } from 'ngx-typesafe-forms';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
@@ -15,6 +22,17 @@ import { HourEntryService } from '../../services/hour-entry.service';
   templateUrl: './date-selector.component.html',
   styleUrls: ['./date-selector.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+
+    MatButtonModule,
+    MatDatepickerModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+  ],
 })
 export class DateSelectorComponent implements OnInit, OnDestroy {
   public readonly dateControl = new FormControl<Date>(getDateOnly(new Date()));

@@ -5,7 +5,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppComponent } from './app.component';
-import { HourEntryModule } from './features/hour-entry/hour-entry.module';
+import { HourEntryComponent } from './features/hour-entry/hour-entry.component';
 
 @NgModule({
   imports: [
@@ -15,7 +15,7 @@ import { HourEntryModule } from './features/hour-entry/hour-entry.module';
 
     MatNativeDateModule,
 
-    HourEntryModule,
+    HourEntryComponent,
   ],
   declarations: [AppComponent],
   bootstrap: [AppComponent],
