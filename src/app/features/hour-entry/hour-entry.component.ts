@@ -1,4 +1,4 @@
-import { CdkDragDrop } from '@angular/cdk/drag-drop';
+import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -14,6 +14,13 @@ import {
 } from '../../shared/utils';
 import { ProjectEntry } from './models';
 import { HourEntryService } from './services/hour-entry.service';
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { DateSelectorComponent } from './components/date-selector/date-selector.component';
+import { ProjectEntryComponent } from './components/project-entry/project-entry.component';
+import { TimeFormatPipeModule } from '../../shared/pipes/time-format-pipe.module';
 
 interface ProjectEntryViewModel {
   projectEntry: ProjectEntry;
@@ -30,6 +37,21 @@ const PROJECT_CODE_TO_CLASS = new Map<string, string>([
   templateUrl: './hour-entry.component.html',
   styleUrls: ['./hour-entry.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [HourEntryService],
+  standalone: true,
+  imports: [
+    CommonModule,
+
+    DragDropModule,
+    MatButtonModule,
+    MatIconModule,
+    MatMenuModule,
+
+    DateSelectorComponent,
+    ProjectEntryComponent,
+
+    TimeFormatPipeModule,
+  ],
 })
 export class HourEntryComponent implements OnInit, OnDestroy {
   private readonly subscriptions = new Subscription();
