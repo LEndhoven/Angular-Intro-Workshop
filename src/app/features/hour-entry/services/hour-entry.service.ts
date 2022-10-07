@@ -19,35 +19,6 @@ export class HourEntryService {
     Map<number, ProjectEntry[]>
   >(new Map<number, ProjectEntry[]>());
 
-  @Memoized public get currentDate$(): Observable<Date> {
-    return this.currentDateSubject.asObservable();
-  }
-
-  @Memoized public get availableProjects$(): Observable<Project[]> {
-    return of(AVAILABLE_PROJECTS).pipe(
-      map((projects) =>
-        [...projects].sort((project1, project2) =>
-          project1.name.localeCompare(project2.name)
-        )
-      ),
-      cache()
-    ); // Redundant Observable flow, only used to mimic a server call setup
-  }
-
-  @Memoized public get currentProjectEntries$(): Observable<ProjectEntry[]> {
-    return combineLatest([
-      this.currentDate$,
-      this.projectEntriesByDateSubject,
-    ]).pipe(
-      map(
-        ([currentDate, projectEntriesByDate]) =>
-          projectEntriesByDate.get(currentDate.getTime()) ??
-          ([] as ProjectEntry[])
-      ),
-      cache()
-    );
-  }
-
   public updateCurrentDate(newCurrentDate: Date): void {
     this.currentDateSubject.next(newCurrentDate);
   }
@@ -172,5 +143,34 @@ export class HourEntryService {
     );
 
     this.projectEntriesByDateSubject.next(currentProjectEntriesByDate);
+  }
+
+  @Memoized public get currentDate$(): Observable<Date> {
+    return this.currentDateSubject.asObservable();
+  }
+
+  @Memoized public get availableProjects$(): Observable<Project[]> {
+    return of(AVAILABLE_PROJECTS).pipe(
+      map((projects) =>
+        [...projects].sort((project1, project2) =>
+          project1.name.localeCompare(project2.name)
+        )
+      ),
+      cache()
+    ); // Redundant Observable flow, only used to mimic a server call setup
+  }
+
+  @Memoized public get currentProjectEntries$(): Observable<ProjectEntry[]> {
+    return combineLatest([
+      this.currentDate$,
+      this.projectEntriesByDateSubject,
+    ]).pipe(
+      map(
+        ([currentDate, projectEntriesByDate]) =>
+          projectEntriesByDate.get(currentDate.getTime()) ??
+          ([] as ProjectEntry[])
+      ),
+      cache()
+    );
   }
 }
