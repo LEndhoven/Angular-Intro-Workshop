@@ -22,8 +22,7 @@ import { DateSelectorComponent } from './components/date-selector/date-selector.
 import { ProjectEntryComponent } from './components/project-entry/project-entry.component';
 import { TimeFormatPipeModule } from '../../shared/pipes/time-format-pipe.module';
 
-interface ProjectEntryViewModel {
-  projectEntry: ProjectEntry;
+interface ProjectEntryViewModel extends ProjectEntry {
   cssClass: string | undefined;
 }
 
@@ -58,42 +57,6 @@ export class HourEntryComponent implements OnInit, OnDestroy {
 
   constructor(private readonly hourEntryService: HourEntryService) {}
 
-  @Memoized public get projectEntryViewModels$(): Observable<
-    ProjectEntryViewModel[]
-  > {
-    return this.hourEntryService.currentProjectEntries$.pipe(
-      map((projectEntries) =>
-        projectEntries.map((projectEntry) => ({
-          projectEntry,
-          cssClass: PROJECT_CODE_TO_CLASS.get(projectEntry.projectCode),
-        }))
-      ),
-      cache()
-    );
-  }
-
-  @Memoized public get totalTimeInMinutes$(): Observable<number> {
-    return this.projectEntryViewModels$.pipe(
-      map((projectEntries) =>
-        projectEntries
-          .filter(
-            ({ projectEntry }) =>
-              projectEntry.timeSpent !== undefined &&
-              isValidTimeDuration(projectEntry.timeSpent)
-          )
-          .reduce(
-            (totalMinutes, projectEntryViewModel) =>
-              totalMinutes +
-              convertTimeExpressinToMinutes(
-                projectEntryViewModel.projectEntry.timeSpent
-              ),
-            0
-          )
-      ),
-      cache()
-    );
-  }
-
   public ngOnInit(): void {
     // Ensure always one entry is visible
     this.subscriptions.add(
@@ -110,10 +73,7 @@ export class HourEntryComponent implements OnInit, OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
-  public trackById<T>(
-    _: number,
-    { projectEntry }: T & { projectEntry: ProjectEntry }
-  ): unknown {
+  public trackById<T>(_: number, projectEntry: T & { id: string }): unknown {
     return projectEntry.id;
   }
 
@@ -129,6 +89,40 @@ export class HourEntryComponent implements OnInit, OnDestroy {
     this.hourEntryService.moveProjectEntry(
       cdkDragDrop.previousIndex,
       cdkDragDrop.currentIndex
+    );
+  }
+
+  @Memoized public get projectEntryViewModels$(): Observable<
+    ProjectEntryViewModel[]
+  > {
+    return this.hourEntryService.currentProjectEntries$.pipe(
+      map((projectEntries) =>
+        projectEntries.map((projectEntry) => ({
+          ...projectEntry,
+          cssClass: PROJECT_CODE_TO_CLASS.get(projectEntry.projectCode),
+        }))
+      ),
+      cache()
+    );
+  }
+
+  @Memoized public get totalTimeInMinutes$(): Observable<number> {
+    return this.projectEntryViewModels$.pipe(
+      map((projectEntries) =>
+        projectEntries
+          .filter(
+            (projectEntry) =>
+              projectEntry.timeSpent !== undefined &&
+              isValidTimeDuration(projectEntry.timeSpent)
+          )
+          .reduce(
+            (totalMinutes, projectEntry) =>
+              totalMinutes +
+              convertTimeExpressinToMinutes(projectEntry.timeSpent),
+            0
+          )
+      ),
+      cache()
     );
   }
 }
