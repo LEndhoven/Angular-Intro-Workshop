@@ -11,6 +11,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { DateTime } from 'luxon';
 import { FormControl } from 'ngx-typesafe-forms';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
@@ -35,7 +36,9 @@ import { HourEntryService } from '../../services/hour-entry.service';
   ],
 })
 export class DateSelectorComponent implements OnInit, OnDestroy {
-  public readonly dateControl = new FormControl<Date>(getDateOnly(new Date()));
+  public readonly dateControl = new FormControl<DateTime>(
+    getDateOnly(DateTime.now().startOf('day'))
+  );
 
   private readonly subscriptions = new Subscription();
 
@@ -66,28 +69,22 @@ export class DateSelectorComponent implements OnInit, OnDestroy {
     return this.hourEntryService.currentDate$
       .pipe(take(1))
       .subscribe((currentDate) => {
-        const dateCopy = getDateOnly(currentDate);
+        const dateCopy = getDateOnly(DateTime.fromJSDate(currentDate));
         this.dateControl.setValue(dateCopy, { emitEvent: false });
       });
   }
 
   private updateServiceOnChanges(): Subscription {
     return this.dateControl.value$.subscribe((currentDate) =>
-      this.hourEntryService.updateCurrentDate(currentDate)
+      this.hourEntryService.updateCurrentDate(currentDate.toJSDate())
     );
   }
 }
 
-function getDateOnly(date: Date): Date {
-  const dateCopy = new Date(date);
-  dateCopy.setHours(0, 0, 0, 0);
-
-  return dateCopy;
+function getDateOnly(date: DateTime): DateTime {
+  return date.startOf('day');
 }
 
-function addDays(date: Date, days: number): Date {
-  const dateCopy = new Date(date);
-  dateCopy.setDate(date.getDate() + days);
-
-  return dateCopy;
+function addDays(date: DateTime, days: number): DateTime {
+  return date.plus({ days });
 }
