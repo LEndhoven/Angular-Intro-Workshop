@@ -23,8 +23,7 @@ import { DateSelectorComponent } from './components/date-selector/date-selector.
 import { ProjectEntryComponent } from './components/project-entry/project-entry.component';
 import { TimeFormatPipeModule } from '../../shared/pipes/time-format-pipe.module';
 
-interface ProjectEntryViewModel {
-  projectEntry: ProjectEntry;
+interface ProjectEntryViewModel extends ProjectEntry {
   cssClass: string | undefined;
 }
 
@@ -69,10 +68,7 @@ export class HourEntryComponent implements OnInit, OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
-  public trackById<T>(
-    _: number,
-    { projectEntry }: T & { projectEntry: ProjectEntry }
-  ): unknown {
+  public trackById<T>(_: number, projectEntry: T & { id: string }): unknown {
     return projectEntry.id;
   }
 

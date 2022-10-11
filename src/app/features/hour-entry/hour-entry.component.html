@@ -13,15 +13,15 @@
 >
   <div
     *ngFor="
-      let projectEntryViewModel of projectEntryViewModels;
+      let projectEntry of projectEntryViewModels;
       trackBy: trackById
     "
     cdkDrag
     class="project-entry"
-    [ngClass]="projectEntryViewModel.cssClass"
+    [ngClass]="projectEntry.cssClass"
   >
     <app-project-entry
-      [projectEntry]="projectEntryViewModel.projectEntry"
+      [projectEntry]="projectEntry"
     ></app-project-entry>
     <button mat-icon-button [matMenuTriggerFor]="menu">
       <mat-icon>more_vert</mat-icon>
@@ -29,7 +29,7 @@
     <mat-menu #menu="matMenu">
       <button
         mat-menu-item
-        (click)="duplicateProjectEntry(projectEntryViewModel.projectEntry)"
+        (click)="duplicateProjectEntry(projectEntry)"
       >
         <mat-icon>content_copy</mat-icon>
         <span>Duplicate</span>
@@ -37,7 +37,7 @@
       <button
         mat-menu-item
         [disabled]="projectEntryViewModels.length <= 1"
-        (click)="removeProjectEntry(projectEntryViewModel.projectEntry)"
+        (click)="removeProjectEntry(projectEntry)"
       >
         <mat-icon>delete</mat-icon>
         <span>Remove entry</span>
